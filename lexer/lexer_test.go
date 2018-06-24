@@ -12,6 +12,7 @@ func TestNextToken(t *testing.T) {
 	};
 
 	let result = add(five, ten);
+	let hex = 0x01;
 	`
 
 	tests := []struct {
@@ -53,6 +54,11 @@ func TestNextToken(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "ten"},
 		{token.RPAREN, ")"},
+		{token.SEMICOLON, ";"},
+		{token.LET, "let"},
+		{token.IDENT, "hex"},
+		{token.ASSIGN, "="},
+		{token.HEX, "0x01"},
 		{token.SEMICOLON, ";"},
 	}
 

@@ -31,6 +31,14 @@ func (l *Lexer) readChar() {
 	l.readPosition++
 }
 
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
+}
+
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
@@ -62,6 +70,16 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
+			// 16進数表記
+			if l.peekChar() == 'x' {
+				l.readChar()
+				l.readChar()
+				tok.Type = token.HEX
+				tok.Literal = l.readHex()
+				return tok
+			}
+
+			// 10進数
 			tok.Type = token.INT
 			tok.Literal = l.readNumber()
 			return tok
@@ -95,6 +113,14 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) readHex() string {
+	position := l.position
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+	return "0x" + l.input[position:l.position]
 }
 
 func isDigit(ch byte) bool {

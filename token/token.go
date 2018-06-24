@@ -26,6 +26,7 @@ const (
 	// 識別子 + リテラル
 	IDENT = "IDENT"
 	INT   = "INT"
+	HEX   = "HEX"
 
 	// 演算子
 	ASSIGN = "="
