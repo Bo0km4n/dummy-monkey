@@ -29,8 +29,15 @@ const (
 	HEX   = "HEX"
 
 	// 演算子
-	ASSIGN = "="
-	PLUS   = "+"
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
+	ASTERISK = "*"
+	SLASH    = "/"
+
+	LT = "<"
+	RT = ">"
 
 	// デリミタ
 	COMMA     = ","

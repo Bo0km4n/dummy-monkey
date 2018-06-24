@@ -13,6 +13,8 @@ func TestNextToken(t *testing.T) {
 
 	let result = add(five, ten);
 	let hex = 0x01;
+	!-/*5;
+	5 < 10 > 4;
 	`
 
 	tests := []struct {
@@ -59,6 +61,18 @@ func TestNextToken(t *testing.T) {
 		{token.IDENT, "hex"},
 		{token.ASSIGN, "="},
 		{token.HEX, "0x01"},
+		{token.SEMICOLON, ";"},
+		{token.BANG, "!"},
+		{token.MINUS, "-"},
+		{token.SLASH, "/"},
+		{token.ASTERISK, "*"},
+		{token.INT, "5"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "5"},
+		{token.LT, "<"},
+		{token.INT, "10"},
+		{token.RT, ">"},
+		{token.INT, "4"},
 		{token.SEMICOLON, ";"},
 	}
 
