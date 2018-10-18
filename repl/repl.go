@@ -6,7 +6,8 @@ import (
 	"io"
 
 	"github.com/Bo0km4n/dummy-monkey/lexer"
-	"github.com/Bo0km4n/dummy-monkey/token"
+	"github.com/Bo0km4n/dummy-monkey/parser"
+	"github.com/k0kubun/pp"
 )
 
 const PROMPT = ">> "
@@ -23,9 +24,9 @@ func Start(in io.Reader, out io.Reader) {
 
 		line := scanner.Text()
 		l := lexer.New(line)
+		p := parser.New(l)
+		program := p.ParseProgram()
 
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%v\n", tok)
-		}
+		pp.Println(program)
 	}
 }
