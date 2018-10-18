@@ -55,6 +55,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.nextToken()
 	p.nextToken()
 
+	// 起点となる文字 fn, if, 1...etc　と対応するパーサの登録
 	p.prefixParseFns = make(map[token.TokenType]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
@@ -66,6 +67,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 
+	// 中置記号となるもののパーサを登録
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
 	p.registerInfix(token.PLUS, p.parseInfixExpression)
 	p.registerInfix(token.MINUS, p.parseInfixExpression)
@@ -92,11 +94,13 @@ func (p *Parser) nextToken() {
 	p.peekToken = p.l.NextToken()
 }
 
+// AST生成のエントリーポイント
 func (p *Parser) ParseProgram() *ast.Program {
 	program := &ast.Program{}
 	program.Statements = []ast.Statement{}
 
 	for p.curToken.Type != token.EOF {
+		// 一文ずつパース
 		stmt := p.parseStatement()
 		if stmt != nil {
 			program.Statements = append(program.Statements, stmt)
@@ -107,6 +111,8 @@ func (p *Parser) ParseProgram() *ast.Program {
 }
 
 func (p *Parser) parseStatement() ast.Statement {
+
+	// return文, let代入文, その他(if, fn) などの式をパース
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement()
@@ -180,6 +186,8 @@ func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 func (p *Parser) ParseExpressionStatement() *ast.ExpressionStatement {
 	// defer untrace(trace("parseExpressionStatement"))
 	stmt := &ast.ExpressionStatement{Token: p.curToken}
+
+	// Pratt式再帰降下解析
 	stmt.Expression = p.parseExpression(LOWEST)
 
 	if p.peekTokenIs(token.SEMICOLON) {
@@ -196,13 +204,17 @@ func (p *Parser) noPrefixParseFnError(t token.TokenType) {
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	// defer untrace(trace("parseExpression"))
+
+	// 一文字目の起点となるパーサを取り出す
 	prefix := p.prefixParseFns[p.curToken.Type]
 	if prefix == nil {
 		p.noPrefixParseFnError(p.curToken.Type)
 		return nil
 	}
+	// 左式(中置記号がなければ文全体)をパース
 	leftExp := prefix()
 
+	// 中置記号があった場合それにあった関数を取り出してパース
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
@@ -330,13 +342,17 @@ func (p *Parser) parseIfExpression() ast.Expression {
 }
 
 func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	// `{` のパース
 	block := &ast.BlockStatement{
 		Token: p.curToken,
 	}
 	block.Statements = []ast.Statement{}
 
+	// `{` の次へ
 	p.nextToken()
 
+	// `}` が来るか入力の終わりまで
+	// 一文ずつパース. 結果をstatementsに格納
 	for !p.curTokenIs(token.RBRACE) && !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatement()
 		if stmt != nil {
@@ -349,20 +365,26 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 }
 
 func (p *Parser) parseFunctionLiteral() ast.Expression {
+
+	// `fn` のパース
 	lit := &ast.FunctionLiteral{
 		Token: p.curToken,
 	}
 
+	// fnの次は `(` でなければエラー
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
+	// 引数のパース
 	lit.Parameters = p.parseFunctionParameters()
 
+	// (...) で次は `{` でなければエラー
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
+	// {...} 関数ないの文をパース
 	lit.Body = p.parseBlockStatement()
 
 	return lit
@@ -387,12 +409,15 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 		p.nextToken()
 		// カンマの次の変数名へ
 		p.nextToken()
+		// 変数名パース
 		ident := &ast.Identifier{
 			Token: p.curToken, Value: p.curToken.Literal,
 		}
+		// 変数名を配列に格納
 		identifiers = append(identifiers, ident)
 	}
 
+	// 次の文字が `)` で閉じてなかったら駄目
 	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
