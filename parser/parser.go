@@ -141,7 +141,6 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		p.nextToken()
 	}
 
-	// pp.Println(stmt)
 	return stmt
 }
 
@@ -309,26 +308,34 @@ func (p *Parser) parseGroupedExpression() ast.Expression {
 }
 
 func (p *Parser) parseIfExpression() ast.Expression {
+
+	// `if` tokenの解析
 	expression := &ast.IfExpression{Token: p.curToken}
 
+	// `if`の次は`(`でなければエラー
 	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
+	// (...)内の式をパース
 	p.nextToken()
 	expression.Condition = p.parseExpression(LOWEST)
 
+	// 式の後は`)`でなければエラー
 	if !p.expectPeek(token.RPAREN) {
 		return nil
 	}
 
+	// 条件式のあとはブロック{}の開始でなければエラー
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
+	// {...} ブロックのパース
 	expression.Consequence = p.parseBlockStatement()
 
-	// elseの解析
+	// ブロック後に `else{}` ブロックがあるかどうか
+	// あれば、elseの解析
 	if p.peekTokenIs(token.ELSE) {
 		p.nextToken()
 
