@@ -32,11 +32,13 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
-
-		io.WriteString(out, fmt.Sprintf("%v\n", evaluator.Eval(program)))
-
+		evalueated := evaluator.Eval(program)
+		if evalueated != nil {
+			io.WriteString(out, evalueated.Inspect())
+			io.WriteString(out, "\n")
+		} else {
+			io.WriteString(out, fmt.Sprintf("could'nt evaluate expression: %s\n", program.String()))
+		}
 	}
 }
 
