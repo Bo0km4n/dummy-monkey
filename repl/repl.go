@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/Bo0km4n/dummy-monkey/evaluator"
+
 	"github.com/Bo0km4n/dummy-monkey/lexer"
 	"github.com/Bo0km4n/dummy-monkey/parser"
 )
@@ -32,6 +34,8 @@ func Start(in io.Reader, out io.Writer) {
 
 		io.WriteString(out, program.String())
 		io.WriteString(out, "\n")
+
+		io.WriteString(out, fmt.Sprintf("%v\n", evaluator.Eval(program)))
 
 	}
 }
