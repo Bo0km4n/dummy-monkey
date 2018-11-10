@@ -164,6 +164,8 @@ func evalBlockStatement(block *ast.BlockStatement) object.Object {
 	for _, statement := range block.Statements {
 		result = Eval(statement)
 
+		// return expression;
+		// であればこの時点でobjectを返す。そうでなければevalだけ行い、ループする。
 		if result != nil && result.Type() == object.RETURN_VALUE_OBJ {
 			return result
 		}
