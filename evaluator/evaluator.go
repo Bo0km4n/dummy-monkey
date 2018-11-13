@@ -18,21 +18,16 @@ func Eval(node ast.Node) object.Object {
 
 	// 文
 	case *ast.Program:
-		val := evalProgram(node)
-		if isError(val) {
-			return val
-		}
-		return &object.ReturnValue{Value: val}
+		return evalProgram(node)
 	case *ast.ExpressionStatement:
-		val := Eval(node.Expression)
-		if isError(val) {
-			return val
-		}
-		return &object.ReturnValue{Value: val}
+		return Eval(node.Expression)
 	case *ast.BlockStatement:
 		return evalBlockStatement(node)
 	case *ast.ReturnStatement:
 		val := Eval(node.ReturnValue)
+		if isError(val) {
+			return val
+		}
 		return &object.ReturnValue{Value: val}
 
 	// 式
@@ -173,11 +168,11 @@ func evalProgram(program *ast.Program) object.Object {
 	var result object.Object
 	for _, statement := range program.Statements {
 		result = Eval(statement)
-		if result != nil {
-			rt := result.Type()
-			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
-				return result
-			}
+		switch result := result.(type) {
+		case *object.ReturnValue:
+			return result.Value
+		case *object.Error:
+			return result
 		}
 	}
 
@@ -192,11 +187,11 @@ func evalBlockStatement(block *ast.BlockStatement) object.Object {
 
 		// return expression;
 		// であればこの時点でobjectを返す。そうでなければevalだけ行い、ループする。
-		switch result := result.(type) {
-		case *object.ReturnValue:
-			return result.Value
-		case *object.Error:
-			return result
+		if result != nil {
+			rt := result.Type()
+			if rt == object.RETURN_VALUE_OBJ || rt == object.ERROR_OBJ {
+				return result
+			}
 		}
 	}
 	return result
