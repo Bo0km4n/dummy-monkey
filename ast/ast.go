@@ -219,6 +219,37 @@ func (ie *IfExpression) String() string {
 	return out.String()
 }
 
+// ForExpression
+// original expression
+// for(<expression>;<expression>;<expression>) {
+//		<Block Statements>
+// }
+type ForExpression struct {
+	Token           token.Token // 'for token
+	InitCondition   Expression  //
+	FinishCondition Expression
+	LoopCondition   Expression
+	Consequence     *BlockStatement
+}
+
+func (fe *ForExpression) expressionNode() {}
+func (fe *ForExpression) TokenLiteral() string {
+	return fe.Token.Literal
+}
+func (fe *ForExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("for")
+	out.WriteString(fe.InitCondition.String())
+	out.WriteString("; ")
+	out.WriteString(fe.FinishCondition.String())
+	out.WriteString("; ")
+	out.WriteString(fe.LoopCondition.String())
+	out.WriteString(" ")
+	out.WriteString(fe.Consequence.String())
+
+	return out.String()
+}
+
 type BlockStatement struct {
 	Token      token.Token
 	Statements []Statement

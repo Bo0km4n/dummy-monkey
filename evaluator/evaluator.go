@@ -5,6 +5,7 @@ import (
 
 	"github.com/Bo0km4n/dummy-monkey/ast"
 	"github.com/Bo0km4n/dummy-monkey/object"
+	"github.com/k0kubun/pp"
 )
 
 var (
@@ -53,6 +54,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalInfixExpression(node.Operator, left, right)
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
+	case *ast.ForExpression:
+		pp.Println(node.String())
+		return newError("not implement for expression")
 	case *ast.LetStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
