@@ -510,12 +510,19 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 }
 
 func (p *Parser) parseDoublePlusStatement() *ast.DoublePlusStatement {
+
 	de := &ast.DoublePlusStatement{
 		Token: p.curToken,
-		Name: &ast.Identifier{
-			Token: p.peekToken,
-			Value: p.peekToken.Literal,
-		},
+	}
+	if !p.expectPeek(token.IDENT) {
+		return nil
+	}
+	de.Name = &ast.Identifier{
+		Token: p.curToken,
+		Value: p.curToken.Literal,
+	}
+	if p.peekTokenIs(token.SEMICOLON) {
+		p.nextToken()
 	}
 	return de
 }
