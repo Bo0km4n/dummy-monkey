@@ -121,6 +121,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseLetStatement()
 	case token.RETURN:
 		return p.parseReturnStatement()
+	case token.DOUBLE_PLUS:
+		return p.parseDoublePlusStatement()
 	default:
 		return p.ParseExpressionStatement()
 	}
@@ -505,4 +507,15 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	}
 
 	return args
+}
+
+func (p *Parser) parseDoublePlusStatement() *ast.DoublePlusStatement {
+	de := &ast.DoublePlusStatement{
+		Token: p.curToken,
+		Name: &ast.Identifier{
+			Token: p.peekToken,
+			Value: p.peekToken.Literal,
+		},
+	}
+	return de
 }

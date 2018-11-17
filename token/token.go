@@ -44,6 +44,9 @@ const (
 	EQ       = "=="
 	NOT_EQ   = "!="
 
+	// original
+	DOUBLE_PLUS = "++"
+
 	LT = "<"
 	RT = ">"
 

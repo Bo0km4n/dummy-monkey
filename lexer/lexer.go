@@ -68,7 +68,15 @@ func (l *Lexer) NextToken() token.Token {
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case '+':
-		tok = newToken(token.PLUS, l.ch)
+		if l.peekChar() == '+' {
+			ch := l.ch
+			l.readChar()
+			literal := string(ch) + string(l.ch)
+			tok.Type = token.DOUBLE_PLUS
+			tok.Literal = literal
+		} else {
+			tok = newToken(token.PLUS, l.ch)
+		}
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
 	case '*':

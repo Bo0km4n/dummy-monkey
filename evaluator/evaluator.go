@@ -29,6 +29,14 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return val
 		}
 		return &object.ReturnValue{Value: val}
+	case *ast.DoublePlusStatement:
+		ident, ok := env.Get(node.Name.Value)
+		if !ok {
+			return newError("not found identifier: %q", node.Name.Value)
+		}
+		val := evalDoublePlusStatement(ident)
+		env.Set(node.Name.Value, val)
+		return val
 
 	// 式
 	case *ast.IntegerLiteral:
@@ -102,6 +110,15 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	default:
 		return newError("unknown operator: %s%s", operator, right.Type())
 	}
+}
+
+func evalDoublePlusStatement(right object.Object) object.Object {
+	if right.Type() != object.INTEGER_OBJ {
+		return newError("unknown operator: ++%s", right.Type())
+	}
+	value := right.(*object.Integer).Value + 1
+
+	return &object.Integer{Value: value}
 }
 
 func evalBangOperatorExpression(right object.Object) object.Object {

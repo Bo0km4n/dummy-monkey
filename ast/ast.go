@@ -325,3 +325,19 @@ func (ce *CallExpression) String() string {
 
 	return out.String()
 }
+
+type DoublePlusStatement struct {
+	Token token.Token
+	Name  *Identifier
+}
+
+func (de *DoublePlusStatement) statementNode()       {}
+func (de *DoublePlusStatement) TokenLiteral() string { return de.Token.Literal }
+func (de *DoublePlusStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("++")
+	out.WriteString(de.Name.Value)
+
+	return out.String()
+}
