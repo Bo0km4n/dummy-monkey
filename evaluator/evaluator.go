@@ -5,7 +5,6 @@ import (
 
 	"github.com/Bo0km4n/dummy-monkey/ast"
 	"github.com/Bo0km4n/dummy-monkey/object"
-	"github.com/k0kubun/pp"
 )
 
 var (
@@ -55,8 +54,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.IfExpression:
 		return evalIfExpression(node, env)
 	case *ast.ForExpression:
-		pp.Println(node.String())
-		return newError("not implement for expression")
+		return evalForExpression(node, env)
 	case *ast.LetStatement:
 		val := Eval(node.Value, env)
 		if isError(val) {
@@ -287,4 +285,29 @@ func unwrapReturnValue(obj object.Object) object.Object {
 		return returnValue.Value
 	}
 	return obj
+}
+
+func evalForExpression(node *ast.ForExpression, env *object.Environment) object.Object {
+	forEnv := object.NewEnclosedEnvironment(env)
+	initEvalResult := Eval(node.InitStatement, forEnv)
+	var result object.Object
+	if isError(initEvalResult) {
+		return initEvalResult
+	}
+
+	for {
+		isFinishObj := Eval(node.FinishCondition, forEnv)
+		isFinish, ok := isFinishObj.(*object.Boolean)
+		if !ok {
+			return newError("finish condition is not boolean")
+		}
+		if !isFinish.Value {
+			return result
+		}
+		result = evalBlockStatement(node.Consequence, forEnv)
+		loopEvalResult := Eval(node.LoopStatement, forEnv)
+		if isError(loopEvalResult) {
+			return loopEvalResult
+		}
+	}
 }

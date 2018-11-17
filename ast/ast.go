@@ -226,9 +226,9 @@ func (ie *IfExpression) String() string {
 // }
 type ForExpression struct {
 	Token           token.Token // 'for token
-	InitCondition   Expression  //
+	InitStatement   Statement   //
 	FinishCondition Expression
-	LoopCondition   Expression
+	LoopStatement   Statement
 	Consequence     *BlockStatement
 }
 
@@ -239,11 +239,11 @@ func (fe *ForExpression) TokenLiteral() string {
 func (fe *ForExpression) String() string {
 	var out bytes.Buffer
 	out.WriteString("for")
-	out.WriteString(fe.InitCondition.String())
+	out.WriteString(fe.InitStatement.String())
 	out.WriteString("; ")
 	out.WriteString(fe.FinishCondition.String())
 	out.WriteString("; ")
-	out.WriteString(fe.LoopCondition.String())
+	out.WriteString(fe.LoopStatement.String())
 	out.WriteString(" ")
 	out.WriteString(fe.Consequence.String())
 

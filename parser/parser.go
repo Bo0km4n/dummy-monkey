@@ -370,17 +370,14 @@ func (p *Parser) parseForExpression() ast.Expression {
 	}
 
 	p.nextToken()
-	expression.InitCondition = p.parseExpression(LOWEST)
-	if !p.expectPeek(token.SEMICOLON) {
-		return nil
-	}
+	expression.InitStatement = p.parseStatement()
 	p.nextToken()
 	expression.FinishCondition = p.parseExpression(LOWEST)
 	if !p.expectPeek(token.SEMICOLON) {
 		return nil
 	}
 	p.nextToken()
-	expression.LoopCondition = p.parseExpression(LOWEST)
+	expression.LoopStatement = p.parseStatement()
 
 	// 式の後は`)`でなければエラー
 	if !p.expectPeek(token.RPAREN) {
