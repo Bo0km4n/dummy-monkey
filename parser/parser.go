@@ -68,6 +68,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.IF, p.parseIfExpression)
 	p.registerPrefix(token.FUNCTION, p.parseFunctionLiteral)
 	p.registerPrefix(token.FOR, p.parseForExpression)
+	p.registerPrefix(token.STRING, p.parseStringLiteral)
 
 	// 中置記号となるもののパーサを登録
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
@@ -525,4 +526,8 @@ func (p *Parser) parseDoublePlusStatement() *ast.DoublePlusStatement {
 		p.nextToken()
 	}
 	return de
+}
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }
