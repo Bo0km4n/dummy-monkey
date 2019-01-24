@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
 
 	"github.com/Bo0km4n/dummy-monkey/object"
 
@@ -42,6 +44,26 @@ func Start(in io.Reader, out io.Writer) {
 		} else {
 			io.WriteString(out, fmt.Sprintf("could'nt evaluate expression: %s\n", program.String()))
 		}
+	}
+}
+
+func FileExecute(file *os.File, out io.Writer) {
+	d, _ := ioutil.ReadAll(file)
+	env := object.NewEnvironment()
+	l := lexer.New(string(d))
+	p := parser.New(l)
+	program := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		printParseErrors(out, p.Errors())
+		return
+	}
+
+	evalueated := evaluator.Eval(program, env)
+	if evalueated != nil {
+		io.WriteString(out, evalueated.Inspect())
+		io.WriteString(out, "\n")
+	} else {
+		io.WriteString(out, fmt.Sprintf("could'nt evaluate expression: %s\n", program.String()))
 	}
 }
 

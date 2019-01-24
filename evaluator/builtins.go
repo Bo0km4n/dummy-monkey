@@ -19,6 +19,12 @@ var builtins = map[string]*object.Builtin{
 	"last": &object.Builtin{
 		Fn: _builtinLast,
 	},
+	"rest": &object.Builtin{
+		Fn: _builtinRest,
+	},
+	"push": &object.Builtin{
+		Fn: _builtinPush,
+	},
 }
 
 func _builtinLen(args ...object.Object) object.Object {
@@ -84,4 +90,39 @@ func _builtinLast(args ...object.Object) object.Object {
 		return arr.Elements[len(arr.Elements)-1]
 	}
 	return NULL
+}
+
+func _builtinRest(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return newError("wrong number of arguments. got=%d, want=1", len(args))
+	}
+	if args[0].Type() != object.ARRAY_OBJ {
+		return newError("argument to `last` must be ARRAY, got=%s", args[0].Type())
+	}
+
+	arr := args[0].(*object.Array)
+	length := len(arr.Elements)
+	if length > 0 {
+		newElements := make([]object.Object, length-1, length-1)
+		copy(newElements, arr.Elements[1:length])
+		return &object.Array{Elements: newElements}
+	}
+	return NULL
+}
+
+func _builtinPush(args ...object.Object) object.Object {
+	if len(args) != 2 {
+		return newError("wrong number of arguments. got=%d, want=2", len(args))
+	}
+	if args[0].Type() != object.ARRAY_OBJ {
+		return newError("argument to `last` must be ARRAY, got=%s", args[0].Type())
+	}
+
+	arr := args[0].(*object.Array)
+	length := len(arr.Elements)
+
+	newElements := make([]object.Object, length+1, length+1)
+	copy(newElements, arr.Elements)
+	newElements[length] = args[1]
+	return &object.Array{Elements: newElements}
 }
