@@ -49,6 +49,8 @@ func Start(in io.Reader, out io.Writer) {
 
 func FileExecute(file *os.File, out io.Writer) {
 	d, _ := ioutil.ReadAll(file)
+
+	io.WriteString(out, string(d)+"\n"+"====================================\n")
 	env := object.NewEnvironment()
 	l := lexer.New(string(d))
 	p := parser.New(l)
