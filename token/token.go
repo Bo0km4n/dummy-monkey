@@ -44,6 +44,7 @@ const (
 	SLASH    = "/"
 	EQ       = "=="
 	NOT_EQ   = "!="
+	PERCENT  = "%"
 
 	// original
 	DOUBLE_PLUS = "++"
