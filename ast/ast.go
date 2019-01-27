@@ -414,3 +414,45 @@ func (hl *HashLiteral) String() string {
 	out.WriteString("}")
 	return out.String()
 }
+
+type SwitchStatement struct {
+	Token token.Token
+	Case  []*CaseStatement
+}
+
+func (ss *SwitchStatement) statementNode() {}
+func (ss *SwitchStatement) TokenLiteral() string {
+	return ss.Token.Literal
+}
+func (ss *SwitchStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("switch {\n")
+	for _, c := range ss.Case {
+		out.WriteString(c.String() + "\n")
+	}
+	out.WriteString("}")
+	return out.String()
+}
+
+type CaseStatement struct {
+	Token      token.Token
+	Condition  Expression
+	Statements []Statement
+}
+
+func (cs *CaseStatement) statementNode() {}
+func (cs *CaseStatement) TokenLiteral() string {
+	return cs.Token.Literal
+}
+func (cs *CaseStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString("case")
+	out.WriteString(cs.Condition.String() + "\n")
+	for _, s := range cs.Statements {
+		out.WriteString("\t" + s.String())
+	}
+
+	return out.String()
+}

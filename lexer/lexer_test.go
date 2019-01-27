@@ -28,6 +28,11 @@ func TestNextToken(t *testing.T) {
 	"foo bar"
 	[1, 2];
 	{"foo": "bar"}
+
+	switch {
+	case i % 3 == 0:
+		break;
+	}
 	`
 
 	tests := []struct {
@@ -127,6 +132,18 @@ func TestNextToken(t *testing.T) {
 		{token.STRING, "foo"},
 		{token.COLON, ":"},
 		{token.STRING, "bar"},
+		{token.RBRACE, "}"},
+		{token.SWITCH, "switch"},
+		{token.LBRACE, "{"},
+		{token.CASE, "case"},
+		{token.IDENT, "i"},
+		{token.PERCENT, "%"},
+		{token.INT, "3"},
+		{token.EQ, "=="},
+		{token.INT, "0"},
+		{token.COLON, ":"},
+		{token.BREAK, "break"},
+		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
 		{token.EOF, ""},
 	}

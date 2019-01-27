@@ -130,6 +130,8 @@ func (p *Parser) parseStatement() ast.Statement {
 		return p.parseReturnStatement()
 	case token.DOUBLE_PLUS:
 		return p.parseDoublePlusStatement()
+	case token.SWITCH:
+		return p.parseSwitchStatement()
 	default:
 		return p.ParseExpressionStatement()
 	}
@@ -554,4 +556,48 @@ func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 		return nil
 	}
 	return exp
+}
+
+func (p *Parser) parseSwitchStatement() ast.Statement {
+	stmt := &ast.SwitchStatement{
+		Token: p.curToken,
+		Case:  []*ast.CaseStatement{},
+	}
+	if !p.peekTokenIs(token.LBRACE) {
+		return nil
+	}
+	p.nextToken()
+	for !p.peekTokenIs(token.RBRACE) {
+		p.nextToken()
+		switch {
+		case p.curTokenIs(token.CASE):
+			s := p.parseCaseStatement()
+			caseStmt, ok := s.(*ast.CaseStatement)
+			if !ok {
+				return nil
+			}
+			stmt.Case = append(stmt.Case, caseStmt)
+		}
+	}
+	return stmt
+}
+
+func (p *Parser) parseCaseStatement() ast.Statement {
+	stmt := &ast.CaseStatement{
+		Token:      p.curToken,
+		Statements: []ast.Statement{},
+	}
+	p.nextToken()
+	exp := p.parseExpression(LOWEST)
+	stmt.Condition = exp
+	if p.peekTokenIs(token.COLON) {
+		p.nextToken()
+	}
+	for !p.peekTokenIs(token.BREAK) {
+		p.nextToken()
+		caseStmts := p.parseStatement()
+		stmt.Statements = append(stmt.Statements, caseStmts)
+	}
+
+	return stmt
 }
