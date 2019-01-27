@@ -743,22 +743,34 @@ func TestParsingIndexExpressions(t *testing.T) {
 }
 
 func TestSwitchStatement(t *testing.T) {
-	input := `switch {
-	case i % 3 == 0:
-		puts("fizz")
-		break;
-	case i % 5 == 0:
-		puts("buzz")
-		break;
-	}`
-	l := lexer.New(input)
-	p := New(l)
-	program := p.ParseProgram()
-	stmt, ok := program.Statements[0].(*ast.SwitchStatement)
-	if !ok {
-		t.Fatalf("stmt not *ast.SwitchStatement. got=%T", program.Statements[0])
+	input := []string{
+		`switch {
+		case i % 3 == 0:
+			puts("fizz")
+			break;
+		case i % 5 == 0:
+			puts("buzz")
+			break;
+		}`,
+		`switch puts("hoge") {
+		case i % 3 == 0:
+			puts("fizz")
+			break;
+		case i % 5 == 0:
+			puts("buzz")
+			break;
+		}`,
 	}
-	if len(stmt.Case) != 2 {
-		t.Errorf("stmt.Case length is not 2. got=%d", len(stmt.Case))
+	for _, c := range input {
+		l := lexer.New(c)
+		p := New(l)
+		program := p.ParseProgram()
+		stmt, ok := program.Statements[0].(*ast.SwitchStatement)
+		if !ok {
+			t.Fatalf("stmt not *ast.SwitchStatement. got=%T", program.Statements[0])
+		}
+		if len(stmt.Case) != 2 {
+			t.Errorf("stmt.Case length is not 2. got=%d", len(stmt.Case))
+		}
 	}
 }

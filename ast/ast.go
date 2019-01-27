@@ -416,8 +416,9 @@ func (hl *HashLiteral) String() string {
 }
 
 type SwitchStatement struct {
-	Token token.Token
-	Case  []*CaseStatement
+	Token      token.Token
+	Expression Expression
+	Case       []*CaseStatement
 }
 
 func (ss *SwitchStatement) statementNode() {}

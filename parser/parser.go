@@ -564,7 +564,10 @@ func (p *Parser) parseSwitchStatement() ast.Statement {
 		Case:  []*ast.CaseStatement{},
 	}
 	if !p.peekTokenIs(token.LBRACE) {
-		return nil
+		exp := p.parseExpression(LOWEST)
+		stmt.Expression = exp
+	} else {
+		stmt.Expression = nil
 	}
 	p.nextToken()
 	for !p.peekTokenIs(token.RBRACE) {
