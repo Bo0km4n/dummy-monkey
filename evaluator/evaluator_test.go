@@ -360,3 +360,18 @@ func TestArrayLiterals(t *testing.T) {
 	testIntegerObject(t, result.Elements[1], 4)
 	testIntegerObject(t, result.Elements[2], 6)
 }
+
+func TestSwitchStatement(t *testing.T) {
+	in := `
+	switch {
+	case 10 % 3 == 0:
+		3;
+		break;
+	case 10 % 5 == 0:
+		5;
+		break;
+	}`
+	evaluated := testEval(in)
+	result, _ := evaluated.(*object.Integer)
+	testIntegerObject(t, result, 5)
+}

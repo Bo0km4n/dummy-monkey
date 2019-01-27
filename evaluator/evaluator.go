@@ -37,6 +37,11 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		val := evalDoublePlusStatement(ident)
 		env.Set(node.Name.Value, val)
 		return val
+	case *ast.SwitchStatement:
+		if node.Expression != nil {
+			Eval(node.Expression, env)
+		}
+		return evalSwitchStatement(node, env)
 
 	// 式
 	case *ast.IntegerLiteral:
@@ -385,4 +390,22 @@ func evalArrayIndexExpression(array, index object.Object) object.Object {
 		return NULL
 	}
 	return arrayObject.Elements[idx]
+}
+
+func evalSwitchStatement(node *ast.SwitchStatement, env *object.Environment) object.Object {
+	for _, c := range node.Case {
+		conditionValue := Eval(c.Condition, env)
+		condition, ok := conditionValue.(*object.Boolean)
+		if !ok {
+			return newError("case condtion value is not boolean. got=%T", conditionValue)
+		}
+		if condition.Value {
+			var result object.Object
+			for _, s := range c.Statements {
+				result = Eval(s, env)
+			}
+			return result
+		}
+	}
+	return nil
 }

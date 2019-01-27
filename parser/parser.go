@@ -582,6 +582,7 @@ func (p *Parser) parseSwitchStatement() ast.Statement {
 			stmt.Case = append(stmt.Case, caseStmt)
 		}
 	}
+	p.nextToken()
 	return stmt
 }
 

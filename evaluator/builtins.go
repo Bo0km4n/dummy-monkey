@@ -59,7 +59,7 @@ func _builtinPuts(args ...object.Object) object.Object {
 		}
 	}
 	fmt.Println(in...)
-	return &object.Integer{Value: int64(len(args))}
+	return NULL
 }
 
 func _builtinFirst(args ...object.Object) object.Object {
