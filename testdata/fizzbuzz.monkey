@@ -5,7 +5,7 @@ let fizzbuzz = fn(n) {
                 puts("fizz");
                 break;
             case i % 5 == 0:
-                puts("buzz")
+                puts("buzz");
                 break;
         }
     }
