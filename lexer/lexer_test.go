@@ -33,8 +33,8 @@ func TestNextToken(t *testing.T) {
 	case i % 3 == 0:
 		break;
 	}
+	true && false
 	`
-
 	tests := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -145,6 +145,9 @@ func TestNextToken(t *testing.T) {
 		{token.BREAK, "break"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
+		{token.TRUE, "true"},
+		{token.DOUBLE_AND, "&&"},
+		{token.FALSE, "false"},
 		{token.EOF, ""},
 	}
 

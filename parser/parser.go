@@ -13,6 +13,7 @@ import (
 const (
 	_ int = iota
 	LOWEST
+	AND_OR
 	EQUALS      // ==
 	LESSGREATER // > or <
 	SUM         // +
@@ -23,17 +24,18 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
-	token.EQ:       EQUALS,
-	token.NOT_EQ:   EQUALS,
-	token.LT:       LESSGREATER,
-	token.RT:       LESSGREATER,
-	token.PLUS:     SUM,
-	token.MINUS:    SUM,
-	token.SLASH:    PRODUCT,
-	token.ASTERISK: PRODUCT,
-	token.PERCENT:  PRODUCT,
-	token.LPAREN:   CALL,
-	token.LBRACKET: INDEX,
+	token.DOUBLE_AND: AND_OR,
+	token.EQ:         EQUALS,
+	token.NOT_EQ:     EQUALS,
+	token.LT:         LESSGREATER,
+	token.RT:         LESSGREATER,
+	token.PLUS:       SUM,
+	token.MINUS:      SUM,
+	token.SLASH:      PRODUCT,
+	token.ASTERISK:   PRODUCT,
+	token.PERCENT:    PRODUCT,
+	token.LPAREN:     CALL,
+	token.LBRACKET:   INDEX,
 }
 
 type Parser struct {
@@ -88,6 +90,7 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerInfix(token.RT, p.parseInfixExpression)
 	p.registerInfix(token.LPAREN, p.parseCallExpression)
 	p.registerInfix(token.LBRACKET, p.parseIndexExpression)
+	p.registerInfix(token.DOUBLE_AND, p.parseInfixExpression)
 	return p
 }
 

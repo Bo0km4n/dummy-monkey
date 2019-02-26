@@ -48,9 +48,11 @@ const (
 	EQ       = "=="
 	NOT_EQ   = "!="
 	PERCENT  = "%"
+	AND      = "&"
 
 	// original
 	DOUBLE_PLUS = "++"
+	DOUBLE_AND  = "&&"
 
 	LT = "<"
 	RT = ">"

@@ -414,3 +414,12 @@ func TestHashLiterals(t *testing.T) {
 		testIntegerObject(t, pair.Value, expectedValue)
 	}
 }
+
+func TestBinaryOperand(t *testing.T) {
+	input := `0 == 1 && 1 == 1`
+	evaluated := testEval(input)
+	result, _ := evaluated.(*object.Boolean)
+	if result.Value {
+		t.Errorf("Result was not false. got=%v", result)
+	}
+}
